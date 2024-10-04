@@ -1,0 +1,258 @@
+
+
+       <!--NavBar-->
+<nav class="navbar navbar-expand-lg  navbar-dark bg-dark">
+
+          <div class="container-fluid">   
+                 
+              <a class="navbar-brand" href="{% url 'home' %}">Home</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+
+              {% if user.is_authenticated %}  
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                  {% for domain in domains %}
+                    {% if domain.category_set.all %}
+                  <li class="nav-item dropdown">
+
+                    <a class="nav-link dropdown-toggle"  href="#" data-bs-auto-close="outside" role="button" id="{{ domain.id }}_dropdown"data-bs-toggle="dropdown" aria-expanded="false">{{ domain.name }}</a>
+                    
+                    
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="{{ domain.id }}_dropdown">
+                      {% for category in domain.category_set.all %}
+                        {% if category.subcategory_set.all %}
+                          <li class="nav-item dropend">
+                            <a class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown"  href="#">{{ category.name }}</a>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                              {% for subcategory in category.subcategory_set.all %}
+                              
+                              <li>
+                                <a type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#sy__{{subcategory.id}}">
+                                    {{subcategory.name}}
+                                </a>
+                                  
+                              </li>
+
+                                {% endfor %}
+                            </ul>
+      
+                          </li>
+                        {% else %}
+                          <li><a class="dropdown-item" href="{% url 'show_questions_by_category' category.id %}">{{ category.name }}</a></li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </li>
+                {% else %}
+
+                <li class="nav-item">
+                  <!--here the modal you create it {% url 'show_questions_by_domain' domain.id %} -->
+                  <a class="nav-link" data-bs-toggle="modal" data-bs-target="#{{domain.id}}" href="">{{ domain.name }}</a>
+                
+                          <!-- Modal -->
+                          {% load static %}
+
+                              <div class="modal fade" id="{{domain.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h1 class="modal-title fs-5" id="exampleModalLabel"><b>{{domain.name}} Knowledge Quiz </b></h1>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <img src="{% static 'app1/images/' %}{{domain.name}}.png" alt="{{domain.name}}" />
+                                      <p>
+                                        {{ domain.description }} 
+                                      </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <a type="button" href="{% url 'show_questions_by_domain' domain.id %}" class="btn btn-secondary">
+                                        
+                                        <i class="fas fa-play"></i> Start Quiz
+                                      </a>
+                                      <a href ="{% url 'configure' %}"type="button" class="btn btn-primary">
+                                        <i class="fas fa-cog"></i>
+                                        Configure Quizz
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                </li>
+                
+                  
+                {% endif %}
+                {% endfor %}
+              
+
+            
+              <li class="nav-item active">
+                <a class="nav-link" href="/leaderboard">
+                  <i class="fa fa-trophy"></i> Leaderboard
+                </a>
+              </li>          
+          </ul>
+
+
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/profile">
+                <i class="fa fa-user"></i> Profile 
+              </a>
+            </li>
+                  <li class="nav-item active">
+                    <a class="nav-link" href="/configure">
+                      <i class="fa fa-cog"></i> Configure Quizz 
+                    </a>
+                  </li>
+
+                
+                      <li class="nav-item">
+                        <a class="nav-link" href="/signout">
+                          <i class="fa fa-sign-out-alt"></i> Signout
+                        </a>
+                      </li>
+
+                      {% if user.is_authenticated and user.is_superuser%}
+                      <li class="nav-item">
+                        <a class="nav-link" href="/admin">
+                          <i class="fas fa-user-cog"></i> Admin
+                        </a>
+                      </li>
+                        {% endif %}
+          </ul>
+      
+    
+
+              {% else %}  
+
+
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      <i class="fa fa-info-circle"></i> About Us
+                    </a>
+                  </li>
+
+                </ul>
+
+          <ul class="navbar-nav ms-auto">
+                  <li class="nav-item active ">
+                    <a class="nav-link" href="/login">
+                      <i class="fa fa-sign-in-alt"></i> Login 
+                    </a>
+                  </li>
+                  
+                  <li class="nav-item">
+                    <a class="nav-link" href="/signup">
+                    <i class="fa fa-user-plus"></i> Signup
+                  </a>
+                </li>
+          </ul>
+                  
+                {% endif %}
+
+      
+    </div>     
+  </div>     
+</nav>
+
+<!--end NavBar-->
+      
+            {% for subcategorie in subcategories %}
+                         <!-- Modal -->
+                         <div class="modal fade" id="sy__{{subcategorie.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">                            <b>{{subcategorie.name}} Knowledge Quiz </b>                      </h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                
+                                
+                                  <img src="{% static 'app1/images/' %}{{subcategorie.name}}.png" alt="{{subcategorie.name}}" />
+                                  <p>
+                                    {{subcategorie.description}}
+                                  </p>
+
+                              </div>
+                              <div class="modal-footer">
+                                <a type="button" href="{% url 'show_questions_by_subcategory' subcategorie.id %}" class="btn btn-secondary" >
+                                  <i class="fas fa-play"></i> Start Quiz
+                                  </a>
+                                <a href ="{% url 'configure' %}"type="button" class="btn btn-primary">
+                                  <i class="fas fa-cog"></i>
+                                  Configure Quizz
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+            {% endfor %} 
+                        
+
+<style>
+  .modal-header {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+.modal-open .modal {
+    backdrop-filter: blur(10px);
+  }
+  
+
+
+.modal-title {
+  font-size: 20px;
+  color: #333;
+}
+
+.btn-close {
+  float: right;
+  font-size: 40px;
+  color: #333;
+  opacity: 0.5;
+}
+
+.modal-dialog {
+  max-width: 600px;
+}
+.modal-open .modal {
+    backdrop-filter: blur(10px);
+  }
+  .modal-body img {
+    width: 100%;
+  height: 200px; /* set fixed height here */
+  object-fit: contain;
+  padding-bottom: 20px;
+}
+
+.card-image {
+  width: 100%;
+  height: 200px; /* set fixed height here */
+  object-fit: contain;
+}
+    
+    
+    
+    
+    </style>     
+
+
+
+
+
+
+
+
+
+    

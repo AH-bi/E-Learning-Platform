@@ -1,0 +1,112 @@
+<h1>Questions for: {{ scd.name }}</h1>
+<div align="left" >
+    <b> Round Number: {{ round }} </b>
+    <span class="timer-div timer" align="right"  >
+      <img class="timer" src="https://uxwing.com/wp-content/themes/uxwing/download/time-and-date/stopwatch-icon.png"
+          width="20px" />
+      <span id="displaytimer" class="timer time-left">0 s</span>
+  </span>
+</div>
+
+<hr> 
+
+ <div id="quizpage">
+    <form name="quiz" id="quiz" method="post" action="">
+      {% for question in questions %}
+      {% csrf_token %}
+
+      <div class="quest">
+        <h3>{{ question.question }}</h3>
+        <p><input type="radio" checked name="{{question.id}}" value="1">{{ question.answer_1 }}</p>
+        <p><input type="radio" name="{{question.id}}" value="2"> {{ question.answer_2 }}</p>
+        <p><input type="radio" name="{{question.id}}" value="3"> {{ question.answer_3 }}</p>
+        <p><input type="radio" name="{{question.id}}" value="4">{{ question.answer_4 }} </p>
+      </div>
+      {% endfor %}
+
+            <input type="hidden" id="timer" name="timer">
+
+            <input type="submit" style="margin-left: 50%;" value="Submit" id="submit-button">
+          </form>
+  </div>
+    
+ 
+{% block script %}
+
+<script>
+  
+    const timer = document.getElementById('displaytimer');
+    const inputtag = document.getElementById('timer');
+    const submitBtn = document.getElementById('submit-button');
+    let t = 0;
+    let intervalId = setInterval(() => {
+        t += 1;
+        timer.innerHTML = "<b>" + t + "  s</b>";
+        inputtag.value = t;
+        checkTimer();
+    }, 1000);
+
+    function checkTimer() {
+  if (t >= {{ timer }}){
+    clearInterval(intervalId);
+    document.getElementById('quiz').submit();
+  }
+}
+
+
+
+</script>
+{% endblock script %}
+
+
+
+
+
+
+<style>
+    .timer {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+.timer-div {
+  background-color: #e1f5fe;
+  width: 7.5em;
+  border-radius: 1.8em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7em 1.8em;
+  margin-left: 91%;
+}
+body {
+  background-color: AliceBlue;
+  font-family: 'Balsamiq Sans', cursive;
+  font-size: 16px;
+  padding: 10px;
+}
+h3 {color: rgb(15, 15, 36);}
+p {color: DarkSlateGrey;}
+p:hover {background-color: GhostWhite;}
+
+input[type=submit] { 
+  background-color: DodgerBlue;
+  text-decoration: none;
+  font-family: 'Balsamiq Sans', cursive;
+  font-size: 16px;
+  padding: 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 20px;
+  color: MidnightBlue;
+}
+
+input[type=submit]:active { 
+  background-color: DeepSkyBlue;
+}
+input[type=submit]:hover { 
+  background-color: RoyalBlue;
+}
+</style>

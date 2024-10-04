@@ -1,0 +1,15 @@
+myenv/
+env/
+email
+qcm/__pycache__/
+qcm/authentication/migrations/__pycache__/
+qcm/app1/migrations
+qcm/db.sqlite3
+qcm/qcm/__pycache__/
+qcm/app1/__pycache__/
+qcm/authentication/__pycache__/
+qcm/app1/migrations/__pycache__/
+qcm/authentication/migrations/__pycache__/
+/qcm/qcm/settings.py
+
+

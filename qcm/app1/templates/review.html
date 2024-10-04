@@ -1,0 +1,121 @@
+<div id="quizpage">
+    {% for question in correct_answers %}
+    <div class="question correct-answer">
+        <h3>{{ question.question }}</h3>
+        <p>Correct</p>
+        <form name="quiz" id="quiz" > 
+          <div class="quest">
+            {% for option in question.get_options %}
+            
+              <p>
+
+                  <input type="radio" name="answer" value="{{ option.0 }}" {% if option.0 == question.answer %}checked{% endif %}> {{ option.1 }}<br>
+              </p>
+            {% endfor %}
+          </div>
+        </form>
+    </div>
+    {% endfor %}
+
+</div>
+
+
+
+
+
+
+<div id="quizpage">
+{% for question in incorrect_answers %}
+<div class="question incorrect-answer">
+    <h3>{{ question.question }}</h3>
+    <p>False</p>
+    <form>
+        {% for option in question.get_options %}
+           
+        <p>
+          <input type="radio" name="answer" value="{{ option.0 }}" {% if option.0 == question.answer %}checked{% endif %}> {{ option.1 }}<br>
+        </p>
+        {% endfor %}
+    </form>
+    <p>Correct answer: {{ question.correct_answer }} </p>
+    <p class="explanation"> Explanation: {{question.explanation}}</p>
+</div>
+{% endfor %}
+</div>
+<br><br>
+<div>
+<a href="{% url 'home' %}" class="back-button">Go Back to Home</a>
+</div>
+
+<style>
+    .correct-answer {
+    background-color: #b3ffb3;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.incorrect-answer {
+    background-color: #ffb3b3;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.explanation {
+  font-style: italic;
+  color: DimGray;
+  margin-top: 10px;
+}
+
+
+
+
+</style>
+
+
+<style>
+
+
+
+body {
+  background-color: AliceBlue;
+  font-family: 'Balsamiq Sans', cursive;
+  font-size: 16px;
+  padding: 10px;
+}
+h3 {color: rgb(15, 15, 36);}
+p {color: DarkSlateGrey;}
+
+input[type=submit] { 
+  background-color: DodgerBlue;
+  text-decoration: none;
+  font-family: 'Balsamiq Sans', cursive;
+  font-size: 16px;
+  padding: 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 20px;
+  color: MidnightBlue;
+}
+.back-button {
+  background-color: DodgerBlue;
+  text-decoration: none;
+  font-family: 'Balsamiq Sans', cursive;
+  font-size: 16px;
+  padding: 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 20px;
+  color: MidnightBlue;
+  margin-top: 20px;
+}
+
+
+
+.explanation {
+  font-style: italic;
+  color: DimGray;
+  margin-top: 10px;
+}
+
+
+</style>

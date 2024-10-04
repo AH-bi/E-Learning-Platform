@@ -1,0 +1,76 @@
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'authentication/login.css' %}">
+    <script src="{% static 'authentication/ls.js' %}"></script>    <body>
+    <!-- Animated Wave Background  -->
+    <div class="ocean">
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+    <!-- Log In Form Section -->
+    <section>
+        <div class="container" id="container">
+    
+            <div class="form-container sign-in-container">
+                <form method="post" action="" >
+                {% csrf_token %}
+                    <h1>Sign in</h1>
+                    <div class="social-container">
+                        <a href="#" target="_blank" class="social"><i class="fab fa-github"></i></a>
+                        <a href="#" target="_blank" class="social"><i class="fab fa-codepen"></i></a>
+                        <a href="#" target="_blank" class="social"><i class="fab fa-google"></i></a>
+                    </div>
+                    <span> Or sign in using E-Mail Address</span>
+                    <label>
+                        <input type="text" placeholder="Username" name="username" required />
+                    </label>
+                    <label>
+                        <input type="password" placeholder="Password" name="pass1"/>
+                    </label>
+                    <a href="#">Forgot your password?</a>
+                                        {% if error_message %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alert">
+                            <strong>Error:</strong> 
+                            <span style="color:red">
+                                <b>
+                                 {{error_message }}
+                                </b> 
+                                
+                            </span>
+
+
+                        </div>
+                        <script>
+                            setTimeout(function() {
+                                var alert = document.getElementById("alert");
+                                alert.remove();
+                            }, 3000); // 3000 milliseconds = 3 seconds
+                        </script>
+                    {% endif %}
+
+            <br>
+            <button type="submit">Sign In</button>
+    
+                </form>
+            </div>
+            <div class="overlay-container">
+                <div class="overlay">
+                    <div class="overlay-panel overlay-left">
+                        <h1>Log in</h1>
+                        <p>Sign in here if you already have an account </p>
+                        <button class="ghost mt-5" id="signIn">Sign In</button>
+                    </div>
+                    <div class="overlay-panel overlay-right">
+                        <h1>Create, Account!</h1>
+                        <p>Sign up if you still don't have an account ... </p>
+                        <button class="ghost" id="signUp">Sign Up</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    </body>
+    
+    

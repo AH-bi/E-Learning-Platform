@@ -1,0 +1,359 @@
+from django.shortcuts import render,redirect
+from django.views import View
+from .models import Question,Subcategory,CorrectAnswer;
+from django.http import HttpResponse
+import random
+
+# Create your views here.
+
+class ShowQuestion(View):
+
+
+    def get(self, request, sub_id):
+            # the last thing add it for the progress bar track the number of questions
+            if (request.session.get('nfq') is None):
+                request.session['nfq']=0
+            # Retrieve the round value from the session
+            round = request.session.get('round')
+            timer=request.session.get('timer')
+            difficulty = request.session.get('difficulty')
+            if round is None:
+                round = 1
+            if timer is None:
+                timer=10
+            if difficulty is None:
+                difficulty = 'Easy'
+
+            # Determine the number of questions to display based on the difficulty level
+            if difficulty == 'Easy':
+                number_of_questions = 3
+            elif difficulty == 'Medium':
+                number_of_questions = 8
+            elif difficulty == 'Hard':
+                number_of_questions = 10
+            else:
+                number_of_questions = 5
+            
+            #the last changes 
+            request.session['nfq']+=number_of_questions 
+            # Filter the question base on the sub_id
+            subcategory = Subcategory.objects.get(id=sub_id)
+            questions = list(Question.objects.filter(subcategory=subcategory))
+            random.shuffle(questions) # there is a possibility for the question to repeat i need to track the questions with their id's
+            questions = questions[:number_of_questions]
+            ctx = {
+                'subcategory': subcategory,
+                'questions': questions,
+                'round': round,
+                'timer':timer,
+            }
+            return render(request, 'questions.html', ctx)
+
+    def post(self, request, sub_id):
+            difficulty = request.session.get('difficulty')
+            for key in request.POST.keys() :
+                    if key.isdigit() and request.POST.get(key):
+                        print(key)
+            if difficulty is None:
+                difficulty="Easy"
+            question_ids = [key for key in request.POST.keys() if key.isdigit()]
+            questions = Question.objects.filter(id__in=question_ids)  
+            correctanswer = CorrectAnswer.objects.all()
+            score_user = request.session.get('score_user', 0)
+            score_computer = request.session.get('score_computer', 0)
+            round = request.session.get('round', 1)
+            answers = {}
+            user_answer=0
+            for question in questions:
+                print("h")
+                user_answer = request.POST.get(f'qid{question.id}')
+                answers[question.id] = user_answer
+                if request.POST.get(f'qid{question.id}') == str(correctanswer.get(question=question).answer):
+                    score_user += 1
+
+
+                computer_score = random.randint(0,100)
+                if difficulty == 'Easy':
+                    if computer_score >= 50:
+                        score_computer += 1
+                elif difficulty == 'Medium':
+                    if computer_score >= 30:
+                        score_computer += 1
+                elif difficulty == 'Hard':
+                    if computer_score >= 1:
+                        score_computer += 1
+
+
+
+            request.session['que'] = answers
+            # Updating the score
+            request.session['score_user'] = score_user
+            request.session['score_computer'] = score_computer
+            # Incrementing the round 
+            round +=1
+            request.session['round'] = round
+            if round <= int(request.session.get('total_round',1)):
+                    print("test")
+                    return redirect('subcategory_questions', sub_id)
+            
+            else:
+                return redirect('result')
+
+
+
+# add it new 
+# is it the best way to handle it to seperate the login of the result from the post method 
+class ShowResult(View):
+    
+    def get(self,request):
+        
+        score_user = request.session.get('score_user',0)         
+        score_computer=request.session.get('score_computer',0)
+        nfq=request.session.get('nfq')
+        if (nfq is None):
+            
+            return redirect('home') 
+        
+        winning_message = "It's a draw" if score_user == score_computer else "You won" if score_user > score_computer  else "You lost"
+        context={
+            'score_user':score_user,
+            'score_computer':score_computer,
+            'nfq':nfq,
+            'winning_message': winning_message,
+        }
+
+        context['score_user_percent']=(score_user/nfq)*100
+        context['score_computer_percent']=(score_computer/nfq)*100
+        del request.session['score_user']
+        del request.session['score_computer']
+        del request.session['round']
+        del request.session['nfq']
+        return render(request, 'result.html', context)
+
+
+
+class ReviewAnswers(View):
+    def get(self, request):        
+        print((request.session.get('que')))
+        return HttpResponse("hello")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+""" back up get function:
+   
+    def get(self, request, sub_id):
+        # Retrieve the round value from the session
+        round = request.session.get('round')
+        timer=request.session.get('timer')
+        difficulty = request.session.get('difficulty')
+        if round is None:
+            round = 1
+        if timer is None:
+            timer=10
+        if difficulty is None:
+            difficulty = 'Easy'
+
+        # Determine the number of questions to display based on the difficulty level
+        if difficulty == 'Easy':
+            number_of_questions = 3
+        elif difficulty == 'Medium':
+            number_of_questions = 8
+        elif difficulty == 'Hard':
+            number_of_questions = 10
+        else:
+            number_of_questions = 5
+        
+
+        # Filter the question base on the sub_id
+        subcategory = Subcategory.objects.get(id=sub_id)
+        questions = Question.objects.filter(subcategory=subcategory)[:number_of_questions]
+        # the same questions will be displayed in every round.
+
+
+        ctx = {
+            'subcategory': subcategory,
+            'questions': questions,
+            'round': round,
+            'timer':timer,
+        }
+        return render(request, 'questions.html', ctx)
+
+// back up for post 
+    def post(self, request, sub_id):
+            difficulty = request.session.get('difficulty')
+            questions = Question.objects.filter(subcategory_id=sub_id)
+            correctanswer = CorrectAnswer.objects.all()
+            score_user = request.session.get('score_user', 0)
+            score_computer = request.session.get('score_computer', 0)
+            round = request.session.get('round', 1)
+            for question in questions:
+                if request.POST.get(f'qid{question.id}') == str(correctanswer.get(question=question).answer):
+                    score_user += 1
+                computer_score = random.randint(0,100)
+                if difficulty == 'Easy':
+                    if computer_score >= 50:
+                        score_computer += 1
+                elif difficulty == 'Medium':
+                    if computer_score >= 30:
+                        score_computer += 1
+                elif difficulty == 'Hard':
+                    if computer_score >= 1:
+                        score_computer += 1
+            
+            request.session['score_user'] = score_user
+            request.session['score_computer'] = score_computer
+
+            context = {
+                'score_user': score_user,
+                'score_computer': score_computer,
+            }
+            round +=1
+            request.session['round'] = round
+
+            if round <= int(request.session.get('total_round')):
+                    print("test")
+                    return redirect('subcategory_questions', sub_id)
+            else:
+                winning_message = "It's a draw" if score_user == score_computer else "You won" if score_user > score_computer  else "You lost"
+                context['winning_message'] = winning_message
+                #del request.session['your key']
+                # request.session.clear() This will remove all data stored in the session, so be sure to only add it when the final round is reached.
+                del request.session['score_user']
+                del request.session['score_computer']
+                del request.session['round']
+                return render(request, 'result.html', context)
+
+"""
+
+
+
+
+
+
+
+
+
+
+<h2>Correct Answers</h2>
+{% for question in correct_answers %}
+  <div class="question">
+    <p>{{ question.question }}</p>
+    <p>True</p>
+    <p>Correct answer: {{question.get_correct_answer(question.id)}}</p>
+  </div>
+{% endfor %}
+
+
+
+<h2>Incorrect Answers</h2>
+{% for question in incorrect_answers %}
+  <div class="question">
+    <p>{{ question.question }}</p>
+    <p>False</p>
+    <p>Correct answer: {{question.get_correct_answer(question.id)}}</p>
+  </div>
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from django.shortcuts import render,redirect
+from django.views import View
+from .models import Question,Subcategory,CorrectAnswer,Score
+from django.http import HttpResponse
+import random
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+
+# Create your views here.
+
+
+class ShowQuestion(LoginRequiredMixin,View):
+    def get(self, request, sub_id=None, category_id=None, domain_id=None):
+            if (request.user.is_authenticated):
+            
+
+                if (request.session.get('number_of_questions') is None):
+                    request.session['number_of_questions']=0
+                                
+                # Retrieve the round value from the session
+                round = request.session.get('round')
+                timer=request.session.get('timer')
+                difficulty = request.session.get('difficulty')
+                if round is None:
+                    round = 1
+                if timer is None:
+                    timer=10
+                if difficulty is None:
+                    difficulty = 'Easy'
+                # Determine the number of questions to display based on the difficulty level
+                if difficulty == 'Easy':
+                    number_of_questions = 2
+                elif difficulty == 'Medium':
+                    number_of_questions = 8
+                elif difficulty == 'Hard':
+                    number_of_questions = 10
+                else:
+                    number_of_questions = 5
+                
+
+                request.session['number_of_questions']+=number_of_questions 
+                # Filter the question base on the sub_id
+                subcategory = Subcategory.objects.get(id=sub_id)
+                questions = list(Question.objects.filter(subcategory=subcategory))
+                questions = Question.objects.all()
+                if sub_id:
+                    subcategory = Subcategory.objects.get(id=sub_id)
+                    questions = questions.filter(subcategory=subcategory)
+                elif category_id:
+                    category = Category.objects.get(id=category_id)
+                    questions = questions.filter(subcategory__category=category)
+                elif domain_id:
+                    domain = Domain.objects.get(id=domain_id)
+                    questions = questions.filter(subcategory__category__domain=domain)
+                else:
+                    # Handle the case when no id is provided
+                    # You can return a 404 error or redirect to a default page
+                    pass
+                    
+                
+                random.shuffle(questions) # there is a possibility for the question to repeat i need to track the questions with their id's
+                questions = questions[:number_of_questions]
+                ctx = {
+                    'subcategory': subcategory,
+                    'questions': questions,
+                    'round': round,
+                    'timer':timer,
+                }
+                return render(request, 'questions.html', ctx)
+            else:
+                return redirect("login")

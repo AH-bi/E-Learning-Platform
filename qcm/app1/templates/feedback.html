@@ -1,0 +1,130 @@
+<link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+
+<div class="container my-5 c">
+
+  <form method="post" action="/feedback/">
+    {% csrf_token %}
+    <h1 class="text-center  font-weight-bold">Give feedback</h1>
+    <p class="para">Do you have any suggestions or comments regarding the user experience of the quiz application?</p>
+    
+  
+    <div class="feedback-level">
+        <div class="level">
+          <input type="radio" id="sad" name="feedback" value="1">
+          <label for="sad"><i class="lar la-sad-tear"></i></label>
+        </div>
+        <div class="level">
+          <input type="radio" id="frown" name="feedback" value="2">
+          <label for="frown"><i class="las la-frown"></i></label>
+        </div>
+        <div class="level">
+          <input type="radio" id="meh" name="feedback" value="3">
+          <label for="meh"><i class="lar la-meh"></i></label>
+        </div>
+        <div class="level">
+          <input type="radio" id="smile" name="feedback" value="4">
+          <label for="smile"><i class="lar la-smile"></i></label>
+        </div>
+        <div class="level">
+          <input type="radio" id="grin" name="feedback" value="5">
+          <label for="grin"><i class="lar la-grin"></i></label>
+        </div>
+      </div>
+  <br>
+  <div class="feedback-msg">
+    <p class="para">
+      What are the main reasons for your rating?
+    </p>
+    <textarea name="reasons" id="reasons"></textarea>
+  </div>
+  
+
+  
+  <div class="buttons">
+    <input value="Send"  type="submit" class="btn btn-primary">
+        
+    
+    
+  </div>
+</form>
+</div>
+
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap");
+
+
+
+.c {
+  color: #4b537c;
+  padding: 40px;
+  border-radius: 15px;
+  gap: 15px;
+}
+
+.heading {
+  font-size: 18px;
+}
+
+.para {
+  font-weight: 600;
+}
+
+.feedback-level {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.level {
+  background: white;
+  padding: 13px;
+  border-radius: 7px;
+  border: solid 0.5px #e0e9fe;
+  cursor: pointer;
+}
+.level:hover {
+  box-shadow: #360a86 0 2px 5px;
+}
+.level:hover i {
+  color: #360a86;
+}
+.level i {
+  font-size: 40px;
+}
+
+.feedback-msg textarea {
+  margin-top: 5px;
+  border: solid 2px #e0e9fe;
+  padding: 13px;
+  border-radius: 7px;
+  outline: none;
+  font-size: 14px;
+  color: #4b537c;
+  font-weight: 500;
+  letter-spacing: 1px;
+  width: 60%;
+  height: 80px;
+  resize: none;
+}
+
+.agreement .checkbox {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.agreement input {
+  accent-color: #360a86;
+}
+.agreement label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+.buttons a:hover {
+  opacity: 0.9;
+}
+
+
+</style>

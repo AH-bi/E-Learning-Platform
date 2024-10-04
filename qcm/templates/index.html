@@ -1,0 +1,58 @@
+
+{% include 'base.html' %}
+  
+
+{% block content %}
+{% if messages %}
+    <br>
+    <ul class="messages">
+    
+        {% for message in messages %}
+            {% if message.tags == "success" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>{{ message }} </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+                </div>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+{% endif %}
+
+
+<style>
+    .btn-close {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+</style>
+
+{% if user.is_authenticated %}  
+{% include "cardlog.html" %}
+
+
+{% else %}
+
+
+
+
+{% include "cardnotlog.html" %}
+<br><br><br>
+
+
+
+
+{% include "about.html" %}
+
+{% endif %}
+
+
+ 
+
+{% endblock %}
+{% include "footer.html"%}
+
+
+
